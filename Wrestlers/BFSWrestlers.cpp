@@ -81,8 +81,7 @@ int main(int argc, char *argv[]) {
         		adj[wmap[wrestler2]].insert(wmap[wrestler1]); 
         }
 
-        //cout << endl;
-    	/*print adjacency matrix
+    	/*print adjacency matrix (DEBUG)
         for (int i = 0; i < adj.size(); i++) {
         	cout << i << " ";
         	for (unordered_set<int> :: iterator it = adj[i].begin(); it != adj[i].end(); ++it)
@@ -97,33 +96,37 @@ int main(int argc, char *argv[]) {
         queue<int> wqueue;
 
         int count = 0;
-	
         int s;
+
+        //Continue looping until count is >= rivalries to account for disconnected graphs
         while (count < rivalries) {
 
         for (int a = 0; a < n; a++) {
-
-        		cout << "a is " << a << endl;
         		
         		if (nodes[a].side != "b" && nodes[a].side != "h") {
-				
+					//push next node onto the queue.  If it hasn't been assigned a side, assign it
+					//to babyfaces
 					nodes[a].side = "b";
 					wqueue.push(a);
         
+        			//continue until queue is empty (BFS complete)
         			while(!wqueue.empty()) {
+        				//pop top wrestler off the queue
         				s = wqueue.front();
         				wqueue.pop();
        		
+       					//if a wrestler adjacent to current wrestler already has the same side then
+       					// print out "Impossible"
        					for (unordered_set<int> :: iterator it = adj[s].begin(); it != adj[s].end(); ++it) {
         		
         					if (nodes[s].side == nodes[*it].side) {
-        			
         						cout << "Impossible!" << endl;
         						return 0;
         					}
-        				//cout << "IT is: " << *it << " ";
+        				
+        				//else push the wrestlers onto the queue to be searched later
         				wqueue.push(*it);
-        		
+        					//assign the appropriate side to the wrestler
         					if (nodes[s].side == "b") {
 
         						nodes[*it].side = "h";
@@ -140,13 +143,16 @@ int main(int argc, char *argv[]) {
         				}
     				}
 
+    				//short circuit if count >= rivalries.  Since there are no duplicates in our adjacency matrix
+    				//this will appriately short circuit the algorithm when all rivlaries have been checked.
     				if (count >= rivalries)
     					break;
     			}
 		}
 	}
   
-    	cout << "count " << count << endl;
+  		//Print out "Yes" and babyfaces and heels
+    	cout << "Yes, it is possible " << endl;
     	unordered_set<int>::iterator iter;
    		cout << "Babyfaces: ";
    		for (iter = baby.begin(); iter != baby.end(); ++iter)
@@ -158,8 +164,9 @@ int main(int argc, char *argv[]) {
    			cout << reverse[*iter] << " ";
    		cout << endl;
 
-    
+    	//close file and exit
         inFile.close();
         return 0;
 }
+ 
  
